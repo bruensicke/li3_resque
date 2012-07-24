@@ -17,8 +17,11 @@ class ResqueWorker extends \lithium\console\Command {
 
     public $port = null;
 
+    public $loglevel = null;
+
 
     public function run() {
+
         if( empty( $this->queues ) ) {
             $this->queues = Environment::get('resque.queues');
         }
@@ -43,6 +46,14 @@ class ResqueWorker extends \lithium\console\Command {
             $this->port = 6379;    
         }
 
+        if( $this->loglevel === null ) {
+            $this->loglevel = Environment::get('resque.loglevel');
+        }
+
+        if( $this->loglevel === null ) {
+            $this->loglevel = Resque_Worker::LOG_NONE;
+        }
+
         ResqueProxy::setBackend($this->host . ':' . $this->port);
 
         $instance = new Resque_Worker($this->queues);
@@ -51,8 +62,11 @@ class ResqueWorker extends \lithium\console\Command {
             throw new Exception('Resque_Worker cant be instantiated!');
         }
 
+        $instance->logLevel = $this->loglevel;
+
         $this->out("Worker is up listening to queues '" . join(',', $this->queues) ."' at {$this->host}:{$this->port} \n");
         $instance->work();
     }
+
 
 }
