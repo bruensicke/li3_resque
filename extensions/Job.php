@@ -2,7 +2,10 @@
 
 namespace li3_resque\extensions;
 
-abstract class Job {
+abstract class Job extends \lithium\core\StaticObject {
+
+	public $args;
+
 
 	public function setUp() {
 
