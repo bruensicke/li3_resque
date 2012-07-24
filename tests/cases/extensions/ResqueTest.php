@@ -2,7 +2,6 @@
 
 namespace li3_resque\tests\cases\extensions;
 
-use knodes\Reporter;
 use li3_resque\extensions\ResqueProxy;
 use app\extensions\job\MyJob;
 
