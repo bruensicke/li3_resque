@@ -3,31 +3,55 @@
 namespace li3_resque\extensions\command;
 
 use Exception;
+use lithium\core\Environment;
+use li3_resque\extensions\ResqueProxy;
 
-include dirname(__FILE__) . '/../../libraries/Resque/lib/Resque.php';
 include dirname(__FILE__) . '/../../libraries/Resque/lib/Resque/Worker.php';
-use Resque;
 use Resque_Worker;
 
 class ResqueWorker extends \lithium\console\Command {
 
-    public $queues = '*';
+    public $queues = null;
 
-    public $host = 'localhost';
+    public $host = null;
 
-    public $port = 6379;
+    public $port = null;
 
 
     public function run() {
-        Resque::setBackend($this->host . ':' . $this->port);
+        if( empty( $this->queues ) ) {
+            $this->queues = Environment::get('resque.queues');
+        }
+
+        if( empty( $this->queues ) ) {
+            throw new Exception('you need to define queues for the worked, either in the environment (as resque.queues) or using -queues');
+        }
+
+        if( empty( $this->host ) ) {
+            $this->host = Environment::get('resque.host');
+        }
+
+        if( empty ( $this->host ) ) {
+            $this->host = 'localhost';    
+        }
+
+        if( empty( $this->port ) ) {
+            $this->port = Environment::get('resque.port');
+        }
+
+        if( empty ( $this->port ) ) {
+            $this->port = 6379;    
+        }
+
+        ResqueProxy::setBackend($this->host . ':' . $this->port);
 
         $instance = new Resque_Worker($this->queues);
 
         if (!$instance){
             throw new Exception('Resque_Worker cant be instantiated!');
         }
-        
-        $this->out("Worker is up\n");
+
+        $this->out("Worker is up listening to queues '" . join(',', $this->queues) ."' at {$this->host}:{$this->port} \n");
         $instance->work();
     }
 
