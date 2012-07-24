@@ -14,4 +14,12 @@ Libraries::add('resque', array(
 	}
 ));
 
+if (Libraries::paths('job') === null) {
+	Libraries::paths(
+		array(
+			'job' => '{:library}\extensions\job\{:name}'
+			)
+		);
+}
+
 ?>
