@@ -1,3 +1,3 @@
 [submodule "libraries/Resque"]
 	path = libraries/Resque
-	url = https://github.com/chrisboulton/php-resque.git
+	url = https://github.com/colinux/php-resque.git
