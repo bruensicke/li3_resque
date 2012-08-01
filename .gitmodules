@@ -1,3 +1,6 @@
 [submodule "libraries/Resque"]
 	path = libraries/Resque
 	url = https://github.com/colinux/php-resque.git
+[submodule "libraries/ResqueScheduler"]
+	path = libraries/ResqueScheduler
+	url = https://github.com/omeryar/php-resque-scheduler.git
