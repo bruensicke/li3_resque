@@ -3,11 +3,12 @@
 namespace li3_resque\extensions;
 
 use lithium\core\Libraries;
-//use lithium\core\Environment;
+use lithium\core\Environment;
 
 use Exception;
 use lithium\core\ClassNotFoundException;
 use lithium\core\ConfigException;
+use lithium\analysis\Logger;
 
 if( !defined( 'Resque' ) ) {
     include dirname( __FILE__ ) . '/../libraries/Resque/lib/Resque.php';
@@ -52,10 +53,21 @@ class ResqueProxy extends \lithium\core\StaticObject {
     public static function __init(  ) {
         $libraryConfig = Libraries::get( 'li3_resque' );
         static::config( $libraryConfig + static::$_defaults );
+ 
+        if( Environment::get( 'resque.host' ) ) {
+            static::$_config['host'] = Environment::get( 'resque.host' );
+        }
+
+        if( Environment::get( 'resque.port' ) ) {
+            static::$_config['port'] = Environment::get( 'resque.port' );
+        }
 
         if( !empty( static::$_config['host'] ) || !empty( static::$_config['port'] ) ) {
-            Logger:debug('host');
-            Resque::setBackend( static::$_config['host'] . ':' . static::$_config['port']);
+            try {
+                Resque::setBackend( static::$_config['host'] . ':' . static::$_config['port']);
+            } catch( Exception $e ) {
+                throw new ConfigException('Could not connect to Resque server');
+            }
         }
     }
 
