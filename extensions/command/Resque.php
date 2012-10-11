@@ -1,47 +1,102 @@
 <?php
 namespace li3_resque\extensions\command;
 
-use li3_resque\core\Resque as Core;
+use li3_resque\extensions\ResqueProxy;
 
 use lithium\core\Environment;
 use lithium\util\String;
 use lithium\net\http\Service;
 use lithium\analysis\Logger;
 
+use Exception;
+
 /**
  * The Resque Command interacts with php-resque
  */
 class Resque extends \lithium\console\Command {
 
+	protected $queues = null;
+
+	protected $host = null;
+
+	protected $port = null;
+
+
+	public function __construct(array $config = array()) {
+		$this->setUp();
+		parent::__construct($config);
+	}
+
+	protected function setUp()
+	{
+		if( empty( $this->host ) ) {
+		    $this->host = Environment::get('resque.host');
+		}
+
+		if( empty ( $this->host ) ) {
+		    $this->host = 'localhost';    
+		}
+
+		if( empty( $this->port ) ) {
+		    $this->port = Environment::get('resque.port');
+		}
+
+		if( empty ( $this->port ) ) {
+		    $this->port = 6379;    
+		}
+
+		ResqueProxy::setBackend($this->host . ':' . $this->port);
+
+		$this->queues = ResqueProxy::queues();
+	}
+
 	/**
-	 * name of redis host to connect to
-	 *
-	 * @var string
+	 * show the current and overall status of resque
 	 */
-	public $host = 'localhost:6379';
+	public function status() {
+		$output = array(
+			array('CURRENT', ''),
+		    array('Queue', 'Size'),
+		    array('----', '---'),
+		);
+
+		foreach($this->queues as $queue) {
+		    $output[] = array( $queue, ResqueProxy::size( $queue ) );
+		}
+
+		$output[] = array( 'failed', ResqueProxy::redis()->llen('failed') );
+
+
+		$output[] = array('----', '---');
+		$output[] = array('TOTALS', '');
+		$output[] = array( 'processed', ResqueProxy::redis()->get('resque:stat:processed') );
+		$output[] = array( 'failed', ResqueProxy::redis()->get('resque:stat:failed') );
+
+		$this->columns($output);
+	}
 
 	/**
-	 *
-	 * @return void
+	 * removes all jobs from a specific queue
+	 * @param  string $queueName name of queue to reset
 	 */
-	public function run() {
-		$this->out(sprintf('connecting to %s', $this->host));
-		Core::host($this->host);
-	}
+	public function reset( $queueName ) {
+		$count = 0;
+		if( $queueName == 'failed' ) {
 
-	public function size($queue = 'default') {
-		$size = Core::size($queue);
-		$this->out(sprintf('size of queue [%s] is [%s]', $queue, $size));
-	}
+			while( ResqueProxy::redis()->lpop( 'failed' ) ) {
+				$count++;
+			}
+		} else {
 
-	public function queue() {
-		$res = Core::queue();
-		$this->out($res);
-	}
+			if( !in_array( $queueName, $this->queues ) ) {
+				throw new Exception( "Queue $queueName not found" );
+			}
+			while( ResqueProxy::pop( $queueName ) ) {
+				$count++;
+			}
+		}
 
-	public function status($token) {
-		$status = Core::status($token);
-		$this->out(sprintf('status for token [%s] is [%s]', $token, $status));
+		$this->out( "Removed $count jobs from queue $queueName" );
 	}
 
 
