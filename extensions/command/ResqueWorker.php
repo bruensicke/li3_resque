@@ -55,7 +55,8 @@ class ResqueWorker extends \lithium\console\Command {
         }
 
         ResqueProxy::setBackend($this->host . ':' . $this->port);
-
+        
+        $this->queues = is_string($this->queues) ? explode(',', $this->queues) : $this->queues;
         $instance = new Resque_Worker($this->queues);
 
         if (!$instance){
