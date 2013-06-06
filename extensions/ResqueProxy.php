@@ -10,11 +10,11 @@ use lithium\core\ClassNotFoundException;
 use lithium\core\ConfigException;
 use lithium\analysis\Logger;
 
-if( !defined( 'Resque' ) ) {
+if( !class_exists( 'Resque' ) ) {
     include dirname( __FILE__ ) . '/../libraries/Resque/lib/Resque.php';
 }
 
-if( !defined( 'ResqueScheduler' ) ) {
+if( !class_exists( 'ResqueScheduler' ) ) {
     include dirname( __FILE__ ) . '/../libraries/ResqueScheduler/lib/ResqueScheduler.php';
 }
 
