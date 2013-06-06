@@ -1,0 +1,22 @@
+{
+    "name": "bruensicke/li3_resque",
+    "version": "0.1.0",
+    "type": "lithium-library",
+    "description": "Resque integration with the Lithium Framework",
+    "keywords": ["api", "resque", "lithium", "li3", "li3_resque"],
+    "homepage": "https://github.com/bruensicke/li3_resque",
+    "license" : "BSD",
+    "authors" : [
+        {
+            "name": "d1rk",
+            "email": "d1rk@gmx.de",
+            "homepage": "https://github.com/bruensicke"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "composer/installers": "*",
+        "chrisboulton/php-resque": ">=1.2",
+        "chrisboulton/php-resque-scheduler": "1.1"
+    }
+}
