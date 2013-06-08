@@ -13,6 +13,9 @@
             "homepage": "https://github.com/bruensicke"
         }
     ],
+    "support": {
+		"issues": "https://github.com/bruensicke/li3_resque/issues"
+	},
     "require": {
         "php": ">=5.3.0",
         "composer/installers": "*",
