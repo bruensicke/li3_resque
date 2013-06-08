@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "type": "lithium-library",
     "description": "Resque integration with the Lithium Framework",
-    "keywords": ["api", "resque", "queue", "redis", "lithium", "li3", "li3_resque"],
+    "keywords": ["api", "job", "resque", "queue", "redis", "lithium", "li3", "li3_resque"],
     "homepage": "https://github.com/bruensicke/li3_resque",
     "license": "BSD-3-Clause",
     "authors" : [
