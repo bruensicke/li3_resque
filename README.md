@@ -52,7 +52,7 @@ use li3_resque\extensions\ResqueProxy;
 ResqueProxy::enqueue('myqueue','app\jobs\MyJob', array('args' => 'to-pass'));
 ```
 
-This will queue up a job. The Job is located in the `app\jobs`
+This will queue up a job. The job is located in the `app\jobs`
 namespace. Its' class name is MyJob, and an array of args are passed
 in. The queue name is `myqueue`.
 
@@ -65,5 +65,6 @@ queue it is to process.
 ./li3 resque-worker --queues=myqueue
 ```
 
+This will run indefinitely, though you will likely run it using `nohup`.
 You can pass additional parameters such as the interval between jobs.
 See the help command for more information.
